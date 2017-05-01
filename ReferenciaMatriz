@@ -4,14 +4,15 @@
 
 #define TamCache 32
 #define TamBloc 8
+#define Linhas 4
 
 int TamTag = log2(pow(2, 10)/TamCache);
 int TamOffset = log2(TamBloc);
 int TamIndice = log2(TamCache/TamBloc);
 	
-typedef struct palavra{
-	char word[10];
-}Palavra;
+	typedef struct palavra{
+		char word[10];
+	}Palavra;
 
 
 
@@ -52,94 +53,85 @@ int Bintoint(int *vet, int tam){
 	};
 	return n;
 };
-
-void Hit(Palavra cache[TamIndice][TamOffset], char *binn){
-	int i, j, h, aux=0, aux1=0,aux2=0;
-	for (i = 0; i < 4; i++){
-		for (j = 0; j < 10 ; j++){
+//ok
+void Hit(Palavra *Tag, Palavra *Index, char *binn){
+	int i, j, h=0, g=0, aux=0,aux2=0,aux1=0;
+	for (i = 0; i < Linhas; i++){
+		for (j = 0; j < TamIndice+TamTag ; j++){
 			if(j < TamTag+TamIndice){
-				if(cache[i][0].word[j]==binn[j]){
-					aux++;
-				};	
+				if(j<TamTag){
+					if(Tag[i].word[h]==binn[j]){
+						aux++;
+						h++;
+					};	
+				};
 				if(j>=TamTag && j < TamTag+TamIndice){
-					if(cache[i][0].word[j]==binn[j]){
-					aux2++;
+					if(Index[i].word[g]==binn[j]){
+						g++;
+						aux++;
+						aux2++;
+					};
 				};
-				};
-			};
+			}; 
 		};
+		printf("aux=%d aux2=%d\n", aux, aux2);
 		if(aux == TamTag+TamIndice){
-			printf("Hit");
+			printf("Hit\n");
 			break;
 		};
 		if(aux2==TamIndice){
-			printf("Miss Hit!");
+			printf("Miss Hit!\n");
 			for(h=0;h<TamTag;h++){
-				cache[i][0].word[h]=binn[h];	
+				Tag[i].word[h]=binn[h];	
 			};
 			break;
 		};
-		aux1++;
+		aux2=0;
 		aux = 0;
-	};
-	
-	
+		h=0;
+		g=0;	
+	};	
 };
-void vazia(Palavra cache[TamIndice][TamOffset]){
-	int i, j, h;
-	for (i = 0; i < 4; i++){
-		for (j = 0; j < TamOffset; j++){
-			for (h = 0; h < 10; h++){
-				cache[i][j].word[h]=0;
-			};
+//##########
+//OK
+void insereInd(Palavra *Indice){
+	int i, j;
+	for(i=0;i < Linhas;i++){
+			Intobin(Indice[i].word, TamIndice, i );
+	};
+	for(i=0;i < TamCache/TamBloc;i++){
+		for(j=0;j<TamIndice;j++){
+			printf("%c", Indice[i].word[j]);
 		};
+	printf("\n");
 	};
+	
+	
 };
+//######
 
-void insereIndOff(char *bin, char cache[TamIndice][TamOffset]){
-	int i, j, h=0;
-	char Offset[TamCache/TamBloc];
-	char Index[TamCache/TamBloc];
-	int linha = h+TamTag+TamIndice-1;
-	int aux = h-TamTag-TamIndice;
-		
-	for(i=0; i < TamCache/TamBloc;i++){
-		Intobin(Offset, TamCache/TamBloc, i);
-		Intobin (Index, TamCache/TamBloc, i);
-		for(j = 0; j<TamBloc; j++){
-			for(h=0;h<10;h++){
-				if(h>TamTag-1 && h<10-TamOffset)
-					cache[i][j].word[linha]=Offset[aux];
-				if(h < TamTag) 
-					cache[i][j].word[h]=Index[h];
-			};
-		};
-	};
-	
-};
-void imprime(cache[TamIndice][TamOffset]){	
-	for (i = 0; i < TamIndice; i++){
-		for (j = 0; j < TamOffset; j++){
-			for (h = 0; h < 10; h++){
-				if(i!=0){
-					if(h)
-					printf("%c")cache[i][j].word[h]=0;	
-				};
-				
-			};
-		};
-	};
-};
 
 	
 FILE*arquivo;
 char op[7];
 char bin [10];
 char num [4];
-
 void main(){
 	arquivo = fopen("docteste.txt", "r");
 	int ch = 0, i, j,h;
+	Palavra Tag[Linhas];
+	Palavra VetIndice[Linhas];
+	
+		
+	for(i=0;i<Linhas;i++){
+		for(j=0;j<TamTag;j++){
+			Tag[i].word[j] = '2';
+			printf("%c",Tag[i].word[j] );
+		};
+		printf("\n");
+	};
+	
+	
 	
 	while (ch != EOF){
 		fscanf(arquivo, "%s", op);
@@ -151,37 +143,13 @@ void main(){
 		fscanf(arquivo, "%s", num);
 		printf("%s\n", num);
 		
-		char vettag[TamCache/TamBloc][TamTag];
-		char vetindex[TamCache/TamBloc][TamIndice];
-		char vetoffset[TamOffset];
-		Palavra cache[TamCache/TamBloc][TamOffset];
-		
-		for (i=0 ; i<TamTag ; i++){
-			vettag[0][i] = bin[i];
-			printf("%c", vettag[0][i]);
-		}
 		printf("\n");
-		for (i=TamTag ; i<TamIndice+TamTag ; i++){
-			vetindex[0][i] = bin[i];
-			printf("%c", vetindex[0][i]);
-		}
-		printf("\n");
-		for (i=TamIndice+TamTag ; i<TamIndice+TamTag+TamOffset ; i++){
-			cache[0][0].word[i] = bin[i];
-			printf("%c", cache[0][0].word[i]);
-		}
-		printf("\n");
-		
-		
-		
-		leitura(cache, bin);
-	
-		ch = getc(arquivo);	
-		
-		
-		
+		insereInd (VetIndice);
+		Hit(Tag, VetIndice, bin);
+		ch = getc(arquivo);				
 	};
-}
+};
+
 	
 /*	
 	for (i = 0; i < 10; i++){
