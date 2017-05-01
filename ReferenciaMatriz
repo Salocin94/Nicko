@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <tgmath.h>
+
+#define TamCache 32
+#define TamBloc 8
+
+int TamTag = log2(pow(2, 10)/TamCache);
+int TamOffset = log2(TamBloc);
+int TamIndice = log2(TamCache/TamBloc);
+	
+typedef struct palavra{
+	char word[10];
+}Palavra;
+
+
+
+
+void Hit(Palavra **cache, char *binn){
+	int i, j, h, aux=0, aux1=0,aux2=0;
+	for (i = 0; i < 4; i++){
+		for (j = 0; j < 10 ; j++){
+			if(j < TamTag+TamIndice){
+				if(cache[i][0].word[j]==binn[j]){
+					aux++;
+				};	
+				if(j>=TamTag && j < TamTag+TamIndice){
+					if(cache[i][0].word[j]==binn[j]){
+					aux2++;
+				};
+				};
+			};
+		};
+		if(aux == TamTag+TamIndice){
+			printf("Hit");
+			break;
+		};
+		if(aux2==TamIndice){
+			printf("Miss Hit!");
+			for(h=0;h<TamTag;h++){
+				cache[i][0].word[h]=binn[h];	
+			};
+			break;
+		};
+		aux1++;
+		aux = 0;
+	};
+	
+};
+		
+int main(void){
+	int bin[10];
+	Palavra cache[10][10];
+	Hit(cache, bin);
+	
+		
+		
+		
+};
