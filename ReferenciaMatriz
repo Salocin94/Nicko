@@ -58,7 +58,6 @@ void Hit(Palavra *Tag, Palavra *Index, char *binn){
 	int i, j, h=0, g=0, aux=0,aux2=0,aux1=0;
 	for (i = 0; i < Linhas; i++){
 		for (j = 0; j < TamIndice+TamTag ; j++){
-			
 			if(j < TamTag+TamIndice){
 				if(j<TamTag){
 					if(Tag[i].word[j]==binn[j]){
@@ -70,7 +69,7 @@ void Hit(Palavra *Tag, Palavra *Index, char *binn){
 						aux++;
 						aux2++;
 					};
-					g++;0
+					g++;
 				};
 			}; 
 		};
@@ -96,17 +95,13 @@ void Hit(Palavra *Tag, Palavra *Index, char *binn){
 //OK
 void insereInd(Palavra *Indice){
 	int i, j;
-	for(i=0;i < Linhas;i++){
-			Intobin(Indice[i].word, TamIndice, i );
-	};
-	for(i=0;i < TamCache/TamBloc;i++){
-		for(j=0;j<TamIndice;j++){
-			printf("%c", Indice[i].word[j]);
+	char vet[TamIndice];
+	for(i=0;i<Linhas;i++){
+		Intobin(vet, TamIndice, i );
+		for(j=0;j < TamIndice;j++){
+			Indice[i].word[j]=vet[j];
 		};
-	printf("\n");
 	};
-	
-	
 };
 //######
 
