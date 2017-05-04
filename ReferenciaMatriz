@@ -1,4 +1,9 @@
+---------------------------------------------
+--questão 1
+produtos :: [Produto]
+produtos = [("Cerveja",3.99),("Vodka", 15.50),("Agua",2.00),("Energetico",8.00),("Salgadinho",3.50),("Conhaque",25.00),("Balalaika",8.00),("Paiero",0.70),("Refrigerante",7.00),("Bala",0.10)]
 
+---------------------------------------------
 --questão 2
 repete :: a -> Int -> [a]
 repete x n = replicate n x
@@ -17,9 +22,22 @@ elemento :: [a] -> Int -> Maybe a
 elemento l n
    |n > length l = Nothing
    |otherwise = Just (l !! n)
+   
 ---------------------------------------------
 --questão 3
+addProduto :: [Produto] -> Produto -> [Produto]
+addProduto lista produto = lista ++ [produto]
 
+remProduto :: [Produto] -> String -> [Produto]
+remProduto (h:t) x
+  | x == fst h = t
+  | otherwise = remProduto t x
+  
+buscaProduto :: [Produto] -> String -> Maybe Produto
+buscaProduto [] _ = Nothing
+buscaProduto (h:t) x
+  | x == fst h = Just h
+  | otherwise = buscaProduto t x
 
 
 ---------------------------------------------
