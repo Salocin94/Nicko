@@ -1,255 +1,35 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <tgmath.h>
 
-#define TamCache 32
-#define TamBloc 8
-#define Linhas 4
+--questão 2
+repete :: a -> Int -> [a]
+repete x n = replicate n x
 
-int TamTag = log2(pow(2, 10)/TamCache);
-int TamOffset = log2(TamBloc);
-int TamIndice = log2(TamCache/TamBloc);
-	
-	typedef struct palavra{
-		char word[10];
-	}Palavra;
-
-
-
-/*********   Calcula Tag   *********/
-int CalculaTag (){
-	int Tag = 1024 / TamCache;
-	return Tag;
-}
+index :: Eq a => a -> [a]-> Maybe Int
+index _ [] = Nothing
+index x l = calcula x l 0
+  where 
+    calcula :: Eq a => a-> [a] -> Int -> Maybe Int
+    calcula _ [] _ = Nothing
+    calcula x (h:t) i
+      |x /= h = calcula x t (i+1)
+      |otherwise = Just i
+      
+elemento :: [a] -> Int -> Maybe a
+elemento l n
+   |n > length l = Nothing
+   |otherwise = Just (l !! n)
+---------------------------------------------
+--questão 3
 
 
-/*********   Calcula Indice   *********/
-int CalculaIndice(){
-	int Indice = TamCache / TamBloc;	
-	return Indice;
-}
 
-/*********   int --> bit   *********/
-void Intobin(char *vet, int tam, int n){
-	int i;
-	for (i=tam-1 ; i>=0 ; i--){
-		if (n < 1){
-			vet[i] = '0';
-		}else{
-			if(vet[i] = (n % 2)==1) vet[i] = '1';
-			else (vet[i] = '0');
-		};
-		n = n / 2;
-	};
-};
+---------------------------------------------
+--questão 4
+alinhaEsq :: String -> Char -> Int -> String
+alinhaEsq lista c n = conc c (n - (length lista)) ++ lista
+
+conc :: Char -> Int -> String
+conc c n = replicate n c
 
 
-/*********   bit --> int   *********/
-int Bintoint(int *vet, int tam){
-	int i, n=0, aux=0;
-	for (i=tam-1 ; i>=0 ; i--){
-		n = n + vet[i]*pow(2 ,(aux));
-		aux++;
-	};
-	return n;
-};
-//ok
-void Hit(Palavra *Tag, Palavra *Index, char *binn){
-	int i, j, h=0, g=0, aux=0,aux2=0,aux1=0;
-	for (i = 0; i < Linhas; i++){
-		for (j = 0; j < TamIndice+TamTag ; j++){
-			if(j < TamTag+TamIndice){
-				if(j<TamTag){
-					if(Tag[i].word[j]==binn[j]){
-						aux++; 
-					};	
-				};
-				if(j>=TamTag && j < TamTag+TamIndice){
-					if(Index[i].word[g]==binn[j]){
-						aux++;
-						aux2++;
-					};
-					g++;
-				};
-			}; 
-		};
-		printf("\n\naux=%d aux2=%d\n\n", aux, aux2);
-		if(aux == TamTag+TamIndice){
-			printf("Hit\n");
-			break;
-		};
-		if(aux2==TamIndice){
-			printf("Miss Hit!\n");
-			for(h=0;h<TamTag;h++){
-				Tag[i].word[h]=binn[h];	
-			};
-			break;
-		};
-		aux2=0;
-		aux = 0;
-		h=0;
-		g=0;	
-	};	
-};
-//##########
-//OK
-void insereInd(Palavra *Indice){
-	int i, j;
-	char vet[TamIndice];
-	for(i=0;i<Linhas;i++){
-		Intobin(vet, TamIndice, i );
-		for(j=0;j < TamIndice;j++){
-			Indice[i].word[j]=vet[j];
-		};
-	};
-};
-//######
-
-
-	
-FILE*arquivo;
-char op[7];
-char bin [10];
-char num [4];
-void main(){
-	arquivo = fopen("docteste.txt", "r");
-	int ch = 0, i=0, j=0,h=0;
-	Palavra Tag[Linhas];
-	Palavra VetIndice[Linhas];
-	
-		
-	for(i=0;i<Linhas;i++){
-		for(j=0;j<TamTag;j++){
-			Tag[i].word[j] = '2';
-			printf("%c",Tag[i].word[j] );
-		};
-		printf("\n");
-	};
-	
-	
-	
-	while (ch != EOF){
-		fscanf(arquivo, "%s", op);
-		printf("%s ", op);
-	
-		fscanf(arquivo, "%s", bin);
-		printf("%s ", bin);
-	
-		fscanf(arquivo, "%s", num);
-		printf("%s\n", num);
-		
-		printf("\n");
-		insereInd (VetIndice);
-		Hit(Tag, VetIndice, bin);
-		ch = getc(arquivo);
-		printf("TAG\n");
-		for(i=0;i<TamBloc;i++){
-			for(j=0;j<TamTag;j++){
-				printf("%c  %c\n", Tag[i].word[j], bin[j]);
-			};
-		};
-		
-		printf("Indice");
-		for(i=0;i<TamBloc;i++){
-			for(j=0, h=TamTag;j<TamTag;j++, h++){
-				printf("%c  %c\n", VetIndice[i].word[j], bin[h]);
-			};
-		};
-	};
-};
-
-	
-/*	
-	for (i = 0; i < 10; i++){
-		printf("%c",cache[0][0].word[i]);
-		
-		};
-	//CRIAR ESSA FUNÇÃO
-
-		printf("\n");	
-		for (i=0;i<b;i++){
-		
-			for (j=0;j<h;j++){
-				Cache[i][j].Ativo = 0;
-				Cache[i][j].Index = i;
-				Cache[i][j].Offset = aux1;
-				Cache[i][j].Tag = 0;;
-				if(aux == h){
-					aux1=0;
-				};
-			aux1++;
-			};	
-				
-		};
-		
-		//##################
-		
-		//FUNCAO BUSCAR/INSERIR TAG 
-		
-		
-		do{
-			i=0;
-			j=0;
-			aux1=0;
-			printf("\ndigite a tag\n");
-			scanf ("%d", &t);
-			for(i=0;i<b;i++){
-				if(Cache[i][j].Tag == t){
-					printf("Hit!\n");
-					break;
-				};
-				if(Cache[i-1][j-1].Tag==t){
-					break;
-				}
-				for(j=0;j<h;j++){
-					if(Cache[i][j].Ativo == 0){
-						Cache[i][j].Tag = t;
-						Cache[i][j].Ativo = 1;
-					}
-					aux1 ++;
-				};
-			};
-			
-			if(aux1==b-1){
-				srand(time(NULL));
-				i = rand() % aux1;
-				for(j=0;j<h;i++){
-					Cache[b][j].Tag = i;
-					
-				};
-				printf ("deveria ser salvo o novo tag aqui %d", i);
-				
-			};
-			
-			
-			
-			//##################
-			
-			printf("\nIMPRIMIR A CACHE (0 PARA NÃO)\n\n");
-			scanf("%d", &r);
-				
-			if(r !=0){
-				for(i=0;i<b;i++){
-					
-					for(j=0;j<h;j++){
-						printf("t%di%do%d ", Cache[i][j].Tag, Cache[i][j].Index, Cache[i][j].Offset);
-					}
-					printf("\n");
-				}
-			
-			}
-			
-			
-			printf("\ndeseja fazer outra operacao (0 para nao)\n\n");
-			scanf("%d", &r);
-	
-	    }while (r != 0);	
-};
-	
-*/
-	
-	
-	
-	
- 
-
+alinhaDir :: String -> Char -> Int -> String
+alinhaDir lista c n = lista ++ conc c (n - (length lista)) 
