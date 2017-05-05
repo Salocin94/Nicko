@@ -1,3 +1,19 @@
+import Data.Maybe
+
+
+-- questão 1
+type Nome = String
+type Valor = Float
+type Quantidade = Int
+type Produto = (Nome, Valor)
+type Item = (Produto, Quantidade)
+
+verifica :: Eq a => [a] -> a -> Bool
+verifica l n = elem n l
+--------------------------------------------
+--questão 1
+produtos :: [Produto]
+produtos = [("Cerveja",3.99),("Vodka", 15.50),("Agua",2.00),("Energetico",8.00),("Salgadinho",3.50),("Conhaque",25.00),("Balalaika",8.00),("Paiero",0.70),("Refrigerante",7.00),("Bala",0.10)]
 
 --questão 2
 repete :: a -> Int -> [a]
@@ -6,23 +22,33 @@ repete x n = replicate n x
 index :: Eq a => a -> [a]-> Maybe Int
 index _ [] = Nothing
 index x l = calcula x l 0
-  where 
-    calcula :: Eq a => a-> [a] -> Int -> Maybe Int
-    calcula _ [] _ = Nothing
-    calcula x (h:t) i
-      |x /= h = calcula x t (i+1)
-      |otherwise = Just i
-      
+  where
+  calcula :: Eq a => a-> [a] -> Int -> Maybe Int
+  calcula _ [] _ = Nothing
+  calcula x (h:t) i
+    |x /= h = calcula x t (i+1)
+    |otherwise = Just i
+
 elemento :: [a] -> Int -> Maybe a
 elemento l n
-   |n > length l = Nothing
-   |otherwise = Just (l !! n)
----------------------------------------------
+  |n > length l = Nothing
+  |otherwise = Just (l !! n)
+
 --questão 3
+addProduto :: [Produto] -> Produto -> [Produto]
+addProduto lista produto = lista ++ [produto]
 
+remProduto :: [Produto] -> String -> [Produto]
+remProduto (h:t) x
+  |x == fst h = t
+  |otherwise = remProduto t x
 
+buscaProduto :: [Produto] -> String -> Maybe Produto
+buscaProduto [] _ = Nothing
+buscaProduto (h:t) x
+  |x == fst h = Just h
+  |otherwise = buscaProduto t x
 
----------------------------------------------
 --questão 4
 alinhaEsq :: String -> Char -> Int -> String
 alinhaEsq lista c n = conc c (n - (length lista)) ++ lista
@@ -30,6 +56,48 @@ alinhaEsq lista c n = conc c (n - (length lista)) ++ lista
 conc :: Char -> Int -> String
 conc c n = replicate n c
 
-
 alinhaDir :: String -> Char -> Int -> String
-alinhaDir lista c n = lista ++ conc c (n - (length lista)) 
+alinhaDir lista c n = lista ++ conc c (n - (length lista))
+---------------------------------------------
+--questão 5
+
+start :: Valor -> String
+start x = show x
+
+indice' :: String-> Int
+indice' [] = 0
+indice' (h:t)
+  |'.' /= h = 1 + indice'  t
+  |otherwise = 1
+
+indice :: Valor -> Int
+indice x = (indice'. start) x
+
+fst' :: Valor -> String
+fst' x = (take . indice) x (start x)
+
+snd' :: Valor -> String
+snd' x = (drop . indice) x ( start x)
+
+combina0 :: Valor -> Int -> String
+combina0 x n 
+   |length(snd' x) < n = (snd' x) ++ repete '0' (n - length(snd' x))
+   |otherwise = take n (snd' x)
+
+combinall :: Valor -> Int -> String
+combinall x n = (fst' x) ++ (combina0 x n)
+
+($$) :: Valor -> Int -> String
+valor $$ quant = combinall valor quant 
+ 
+ ----------------------------------------------------------------------------------
+ 
+ --6
+ 
+nome :: Item -> String
+nome ((n,_),_) = alinhaDir n '.' 45
+
+valor :: Item -> String
+valor ((_, v), x) = alinhaEsq ('$' : (start v) ++ " x " ++ (show x) ++ " = ") '.' 25
+ --formataItem :: Item -> String
+ --formataitem =
