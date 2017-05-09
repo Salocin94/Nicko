@@ -13,7 +13,7 @@ verifica l n = elem n l
 --------------------------------------------
 --questão 1
 produtos :: [Produto]
-produtos = [("Cerveja",3.99),("Vodka", 15.50),("Agua",2.00),("Energetico",8.00),("Salgadinho",3.50),("Conhaque",25.00),("Balalaika",8.00),("Paiero",0.70),("Refrigerante",7.00),("Bala",0.10)]
+produtos = [("Cerveja",3.99),("Vodka", 15.50),("Agua",2.00),("Energetico",8.00),("Salgadinho",3.50),("Conhaque",25.00),("Camel",8.00), ("Paiero",0.70),("Refrigerante",7.00),("Bala",0.10)]
 
 --questão 2
 repete :: a -> Int -> [a]
@@ -89,15 +89,83 @@ combinall x n = (fst' x) ++ (combina0 x n)
 
 ($$) :: Valor -> Int -> String
 valor $$ quant = combinall valor quant 
+
+dinheiro :: Valor -> String
+dinheiro valor = '$' : (valor $$ 2)
  
  ----------------------------------------------------------------------------------
  
  --6
- 
-nome :: Item -> String
-nome ((n,_),_) = alinhaDir n '.' 45
 
-valor :: Item -> String
-valor ((_, v), x) = alinhaEsq ('$' : (start v) ++ " x " ++ (show x) ++ " = ") '.' 25
- --formataItem :: Item -> String
- --formataitem =
+subTotal :: Item -> String
+subTotal ((n, v),q) = dinheiro v ++ " x " ++ show q ++ alinhaEsq("= " ++ dinheiro (v* fromIntegral (q))) ' ' 10
+
+formataItem :: Item -> String
+formataItem ((n,v),q) = (alinhaDir n '.' 45) ++ (alinhaEsq (subTotal ((n,v),q))  '.' 35)
+
+----------------------------------------------------------------------------------
+--7
+lItens :: [Item]
+lItens = [(("Cerveja",3.99),3),(("Vodka", 15.50),2),(("Agua",2.00),10),(("Energetico",8.00),20),(("Salgadinho",3.50),0)]
+
+pValor :: Item -> Valor
+pValor ((_,v),_) = v
+
+pNome :: Item -> Nome
+pNome ((n,_),_) = n
+
+pQnt :: Item -> Quantidade
+pQnt ((_,_),q) = q
+
+vTotal :: [Item] -> Float
+vTotal [] = 0
+vTotal (h:t) = (((pValor h)*(fromIntegral (pQnt h))) + vTotal t)
+
+total :: [Item] -> String
+total l = show (vTotal l)
+
+-- 9
+fLista :: [Produto]-> Quantidade -> [Item]
+fLista [] _ = [] 
+fLista (h:t) x = [(h, x)] ++ fLista t (x+1)   
+
+proditem :: [Item]
+proditem  = fLista produtos 0
+
+chamada ::   [Produto]->[Quantidade] -> [Item]
+chamada [] _ = []
+chamada _ [] = []
+chamada (h:t) (he:ta) = [(h,he)] ++ (chamada t ta)
+
+proditemx :: [Quantidade] -> [Item]
+proditemx qtde = chamada produtos qtde
+
+-- 10
+funcao :: [(Nome, Quantidade)] -> [Produto] -> [Item]
+funtao [] _ = []
+funcao _ [] = []
+funcao (h:t) (he:ta) = funcao2 h (he:ta) ++ funcao t (he:ta)
+
+funcao2 :: (Nome, Quantidade)-> [Produto] -> [Item]
+funcao2 _ [] = []
+funcao2 comp (h:t) 
+   |(fst comp) == fst h = [(h, (snd comp))]
+   |otherwise = funcao2 comp t
+
+itensn :: [(Nome, Quantidade)] -> [Item]
+itensn lista = funcao lista produtos
+
+
+aux :: [(Int, Quantidade)] -> [Produto] -> [Item]
+aux _ [] = []
+aux [] _ = []
+aux (h:t) (he:ta) = aux2 0 h (he:ta) ++ aux t (he:ta)
+
+aux2 :: Int -> (Int, Quantidade) -> [Produto]-> [Item]
+aux2 _ _ [] = []
+aux2 cont tupla (h:t)
+   |cont == fst tupla = [(h, (snd tupla))]
+   |otherwise = aux2 (cont + 1) tupla t
+
+itensi :: [(Int, Quantidade)] -> [Item]
+itensi lista = aux lista produtos
